@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.7.570/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+    <title>DocumentSend
+    </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #maincontainer {
+            background-color: rgb(248, 248, 251);
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #topbar {
+            background-color: rgb(254, 248, 248);
+            width: 100%;
+            height: 5%;
+        }
+
+        #contentcontainer {
+            background-color: rgba(10, 240, 206, 0.867);
+            background-image: linear-gradient(rgb(62, 158, 243), rgb(160, 203, 241));
+            width: 100%;
+            height: 90%;
+            padding-top: 30px;
+            overflow-y: auto;
+            padding-left: 15%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #bottombar {
+            padding-top: 6px;
+            background-color: rgb(249, 246, 246);
+            width: 100%;
+            height: 5%;
+        }
+
+        #sendbtn {
+            margin-top: 1px;
+            margin-left: 95%;
+            background-color: rgb(41, 158, 241);
+            color: black;
+            width: 56px;
+            height: 16px;
+            cursor: pointer;
+            border: solid 1px;
+            border-color: #18a7ff;
+        }
+
+        #sendbtn:hover {
+            background-color: rgb(17, 137, 243);
+        }
+
+        .addbtn {
+            height: 13%;
+            width: 80%;
+            display: flex;
+            cursor: pointer;
+            align-items: center;
+            background-color: rgb(247, 247, 246);
+            justify-content: space-between;
+            padding-left: 18px;
+            padding-right: 18px;
+            margin-top: 50px;
+        }
+
+        #selectioncontainer {
+            margin-top: 22px;
+            height: 182px;
+            background-color: rgb(247, 248, 248);
+            display: flex;
+            width: 80%;
+            border: dashed;
+            border-color: rgb(181, 178, 178);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #selectioncontainer:hover {
+            border-color: rgb(42, 42, 237);
+        }
+
+        #selectioncontainer button {
+            height: 55px;
+            width: 250px;
+        }
+
+        #recipientcontainer {
+
+            margin-top: 25px;
+            background-color: rgba(10, 240, 206, 0.867);
+            display: none;
+            width: 78%;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 30px;
+        }
+
+        #mssgcontainer {
+            margin-top: 25px;
+            height: 225px;
+           
+            display: none;
+            width:78%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .upload-area-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .uploadlabel {
+            width: 100%;
+            min-height: 100px;
+            background: #18a7ff0d;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .uploadlabel span {
+            font-size: 132px;
+            color: #18a7ff;
+        }
+
+        .uploadlabel p {
+            color: #18a7ff;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .input-bx {
+            width: 200px;
+            background-color: rgb(255, 255, 255);
+        }
+
+        #slectfilebtn {
+            border-radius: 15px;
+            display: block;
+            height: 45px;
+            width: 215px;
+            background-color: #18a7ff;
+            align-items: center;
+        }
+
+        #slectfilebtn label {
+            padding-left: 18px;
+            padding-top: 10px;
+            align-content: center;
+            border-radius: 15px;
+            display: block;
+            height: 25px;
+            background-color: #18a7ff;
+            color: rgb(239, 243, 246);
+            font-size: 23px;
+        }
+
+        #filepreview {
+            background-color: #18a7ff;
+            height: 175px;
+            width: 150px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+
+        }
+
+        #filepreview :hover {
+            cursor: pointer;
+        }
+
+
+        #pdf-canvas {
+            background-color: aliceblue;
+            height: 145px;
+            width: 150px;
+            
+        }
+
+        #popup {
+            display: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            align-items: center;
+            background-color: rgb(234, 241, 241);
+            width: 625px;
+            height: 75%;
+            position: absolute;
+            overflow-y: auto;
+            z-index: 1000;
+            border-width: 10px;
+           
+        }
+        #bigpopub{
+           
+            display: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            align-items: center;
+            background-color: rgb(251, 253, 253);
+            width: 625px;
+            height: 560px;
+            position: absolute;
+            overflow-y: auto;
+            z-index: 1000;
+            border-color: rgb(245, 3, 7);
+            border-width: 10px;
+            flex-direction: column;
+            
+        }
+        #pagetitlebar{
+            background-color: rgb(248, 252, 249);
+            width: 100%;
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="maincontainer">
+        <div id="topbar"></div>
+        <div id="contentcontainer" >
+            <div id="bigpopub">
+                <div id="pagetitlebar"  >
+                    <button onclick="closepreview()"   style="margin-left: 92%; margin-top:4px; border: none; cursor: pointer;">Close</button>
+                </div>
+                <div id="popup">
+                </div>
+            </div>
+            
+            <fieldset id="selectioncontainer">
+               <!--legend>
+                    <h1>Add Document</h1>
+                </legend>--> 
+                <div id="filepreview" onclick="showpreview()" >
+                    <canvas id="pdf-canvas">
+                    </canvas>
+                    <p id="previewname"></p>
+                </div>
+                <div class="input-bx" id="input-bx">
+                    <form action="">
+                        <input type="file" id="upload" accept=".doc,.docs,.pdf" hidden>
+                        <label for="upload" class="uploadlabel">
+                            <span style="align-items: center;"> <i class="fa fa-cloud-upload "></i>
+                            <p style="font-family: Arial, Helvetica, sans-serif; padding-left: 30px;">Upload</p>
+                            </span>
+                        </label>
+                    </form>
+                </div>
+                
+            </fieldset>
+            <div class="addbtn" onclick="unhiderecipintscontainer()" id="reciaddbtn">
+                <h1>Add Recipients</h1>
+                <i class="fa fa-angle-down"></i>
+            </div>
+            <div class="" onclick="" id="recipientcontainer">
+                <div style="background-color: rgb(247, 250, 251); width: 80%; height: 161px; padding-left:100px; margin-top: 45px; border-left: solid 8px; border-left-color: rgb(41, 41, 240); padding-top: 20px; "
+                    id="r1">
+                    <form action="">
+                        <label for="" style="font-size: 22px;">Name:</label>
+                        <br>
+                        <input style="width: 48%; height: 24px; padding-left: 4px;" type="text" id="r1name">
+                        <br>
+                        <br>
+                        <label for="" style="font-size: 22px;">Email:</label>
+                        <br>
+                        <input style="width: 48%; height: 24px; padding-left: 4px;" type="text" id="r1email">
+                    </form>
+                    <button onclick="deleteRecipient()"
+                        style="color: red; background-color: aliceblue; border-color: aliceblue; margin-left: 90%; margin-bottom: 8%;   cursor: pointer;">Delete</button>
+                </div>
+            </div>
+            <button
+                style="width :130px; height:40px; background-color: rgb(243, 244, 246); margin-top: 20px;  display: none; cursor: pointer;"
+                id="rb" onclick="addForm()">ADD RECIPIENT</button>
+            <hr style="margin-top: 40px; width:80%">
+
+            <div class="addbtn" onclick="unhidemssgcontainer()" id="mssgaddbtn">
+                <h1>Add Subject</h1>
+                <i class="fa fa-angle-down"></i>
+            </div>
+            <div class="" id="mssgcontainer">
+                <div
+                    style="background-color: rgb(253, 254, 255); width: 80%; height: 160px; padding-left:100px; margin-top: 45px; padding-top: 20px;  ">
+                    <form action="">
+                        <label for="" style="font-size: 22px;">Type Your Message Here:</label>
+                        <br>
+                        <textarea name="" id="message" cols="40" rows="16"
+                            style="width: 80%; height: 70px; padding: 10px;"></textarea>
+                        <br>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="bottombar">
+            <button id="sendbtn" onclick="send()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function unhidecontainer() {
+            doumentcontainer = document.getElementById('selectioncontainer');
+            console.log(typeof doumentcontainer.style.display);
+
+            if (doumentcontainer.style.display === "flex") {
+                doumentcontainer.style.display = "none";
+                console.log("inside if");
+                //console.log(icon.classList);
+                icon = document.getElementById('docaddbtn').getElementsByTagName('i');
+                console.log(icon);
+                icon[0].classList.remove("fa-angle-up");
+                icon[0].classList.add("fa-angle-down");
+
+            }
+            else {
+                doumentcontainer.style.display = "flex";
+                console.log("inside else");
+                icon = document.getElementById('docaddbtn').getElementsByTagName('i');
+                console.log(icon[0]);
+                console.log(icon[0].classList);
+
+                icon[0].classList.remove("fa-angle-down");
+                icon[0].classList.add("fa-angle-up");
+            }
+        }
+
+        function unhiderecipintscontainer() {
+            recipientcontainer = document.getElementById('recipientcontainer');
+            // console.log(typeof doumentcontainer.style.display);
+            rb = document.getElementById('rb');
+            if (recipientcontainer.style.display === "flex") {
+                recipientcontainer.style.display = "none";
+                rb.style.display = "none";
+                console.log("inside if");
+                //console.log(icon.classList);
+                icon = document.getElementById('reciaddbtn').getElementsByTagName('i');
+                console.log(icon);
+                icon[0].classList.remove("fa-angle-up");
+                icon[0].classList.add("fa-angle-down");
+
+            }
+            else {
+                rb.style.display = "block";
+                recipientcontainer.style.display = "flex";
+                console.log("inside else");
+                icon = document.getElementById('reciaddbtn').getElementsByTagName('i');
+                console.log(icon[0]);
+                console.log(icon[0].classList);
+                icon[0].classList.remove("fa-angle-down");
+                icon[0].classList.add("fa-angle-up");
+            }
+
+        }
+
+        function unhidemssgcontainer() {
+            mssgcontainer = document.getElementById('mssgcontainer');
+
+            if (mssgcontainer.style.display === "flex") {
+                mssgcontainer.style.display = "none";
+
+                console.log("inside if");
+                //console.log(icon.classList);
+                icon = document.getElementById('mssgaddbtn').getElementsByTagName('i');
+                console.log(icon);
+                icon[0].classList.remove("fa-angle-up");
+                icon[0].classList.add("fa-angle-down");
+
+            }
+            else {
+                mssgcontainer.style.display = "flex";
+                console.log("inside else");
+                icon = document.getElementById('mssgaddbtn').getElementsByTagName('i');
+                console.log(icon[0]);
+                console.log(icon[0].classList);
+                icon[0].classList.remove("fa-angle-down");
+                icon[0].classList.add("fa-angle-up");
+            }
+        }
+        recipientarray = ["r1"];
+        cc = -1;
+        rc_count = 1;
+        let h=150;
+        function addForm() {
+            rc = document.getElementById('recipientcontainer');
+            colors = ["#FFFF00", "#00FF00", "#ff7f50", "#ff00ff", "#00ff00"]
+
+            if (cc < 4)
+                cc = cc + 1;
+            else
+                cc = 0;
+
+
+            rc_count++;
+            id = "r" + rc_count;
+            nameid = id + "name";
+            emailid = id + "email";
+            recipientarray.push(id);
+            var newSubContainer = document.createElement("div");
+            newSubContainer.style.background = "rgb(240, 244, 246)";
+            newSubContainer.style.width = "80%";
+            newSubContainer.style.height = "161px";
+            newSubContainer.style.paddingLeft = "100px";
+            newSubContainer.style.marginTop = "45px";
+            newSubContainer.style.borderLeft = "solid 8px";
+            newSubContainer.style.borderLeftColor = colors[cc];
+            newSubContainer.setAttribute("id", id);
+            //newforrm.style.opacity="0.5";
+            //border-left: solid 8px; border-left-color: rgb(103, 151, 248)
+            newforrm = document.createElement("form");
+            newforrm.appendChild(document.createElement("br"));
+            newSubContainer.appendChild(newforrm);
+
+            newlabel1 = document.createElement("label");
+            newlabel1.style.fontSize = "22px"
+            newlabel1.innerHTML = "Name:";
+            newforrm.appendChild(newlabel1);
+            newforrm.appendChild(document.createElement("br"));
+            newinput1 = document.createElement("input");
+            newinput1.setAttribute("type", "text");
+            newinput1.style.width = "48%";
+            newinput1.style.height = "24px";
+            newinput1.style.paddingLeft="4px";
+            newinput1.setAttribute("id", nameid);
+            newforrm.appendChild(newinput1);
+
+            newforrm.appendChild(document.createElement("br"));
+            newforrm.appendChild(document.createElement("br"));
+            newlabel2 = document.createElement("label");
+            newlabel2.style.fontSize = "22px";
+            newlabel2.innerHTML = "Email:";
+            newforrm.appendChild(newlabel2);
+            newforrm.appendChild(document.createElement("br"));
+            
+            newinput2 = document.createElement("input");
+            newinput2.setAttribute("type", "text");
+            newinput2.style.width = "48%";
+            newinput2.style.height = "24px";
+            newinput2.setAttribute("id", emailid);
+            newinput2.style.paddingLeft="4px";
+            newforrm.appendChild(newinput2);
+
+            document.getElementById('recipientcontainer').appendChild(newSubContainer);
+            newforrm.appendChild(document.createElement("br"));
+            deletebutton = document.createElement("button");
+            deletebutton.innerHTML = "Delete";
+            deletebutton.style.color="red";
+            deletebutton.style.backgroundColor="aliceblue";
+            deletebutton.style.borderColor="aliceblue";
+            deletebutton.style.marginLeft="90%";
+            deletebutton.style.marginBottom="8%";
+            deletebutton.style.cursor="pointer";
+            deletebutton.setAttribute("onclick", "deleteRecipient()");
+            newSubContainer.appendChild(deletebutton);
+            console.log(recipientarray);
+        
+
+        }
+        const inputElement = document.getElementById("upload");
+        const canvas = document.getElementById("pdf-canvas");
+        const context = canvas.getContext("2d");
+        let pdfDoc = null;
+        let fileUrl;
+        let base64file;
+        let documentname;
+        function renderPage(pageNumber, desiredWidth, desiredHeight) {
+            pdfDoc.getPage(pageNumber).then((page) => {
+                const viewport = page.getViewport({ scale: 1 });
+
+                // Calculate the scale factor required to fit the PDF page in the desired width and height
+                const scale = Math.min(desiredWidth / viewport.width, desiredHeight / viewport.height);
+                // Set the viewport to the desired width and height using the scale factor
+                const scaledViewport = page.getViewport({ scale });
+                canvas.height = scaledViewport.height;
+                canvas.width = scaledViewport.width;
+
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: scaledViewport,
+                };
+                page.render(renderContext);
+            });
+        }
+
+        inputElement.addEventListener("change", () => {
+            const file = inputElement.files[0];
+            fileUrl = URL.createObjectURL(file);
+
+            pdfjsLib.getDocument(fileUrl).promise.then((pdf) => {
+                pdfDoc = pdf;
+                renderPage(1, 150, 182); // Render the first page with a width of 800 pixels and a height of 600 pixels
+                document.getElementById('filepreview').style.display = "flex";
+                document.getElementById('input-bx').style.display = "none";
+                document.getElementById('slectfilebtn').style.display = "none";
+            });
+        });
+        function renderPagess(pageNumber, canvasn, desiredWidth, desiredHeight) {
+            pdfDoc.getPage(pageNumber).then((page) => {
+                const viewport = page.getViewport({ scale: 1 });
+
+                // Calculate the scale factor required to fit the PDF page in the desired width and height
+                const scale = Math.min(desiredWidth / viewport.width, desiredHeight / viewport.height);
+
+                // Set the viewport to the desired width and height using the scale factor
+                const scaledViewport = page.getViewport({ scale });
+
+                canvasn.height = scaledViewport.height;
+                canvasn.width = scaledViewport.width;
+
+                const context = canvasn.getContext("2d");
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: scaledViewport,
+                };
+                page.render(renderContext);
+            });
+        }
+
+        function renderPages(desiredWidth, desiredHeight) {
+            for (let i = 1; i <= 24; i++) {
+                const canvasn = document.createElement("canvas");
+                canvasn.style.width = "600px";
+                console.log("canvas");
+                document.getElementById('popup').appendChild(canvasn);
+                renderPagess(i, canvasn, 650, 500);
+            }
+        }
+
+
+        function closepreview() {
+        document.getElementById('bigpopub').style.display = "none";
+        }
+
+        function showpreview() {
+            document.getElementById('bigpopub').style.display="flex";
+            console.log("hello");
+            document.getElementById('popup').style.display = "block";
+            document.getElementById('popup').style.borderColor = "blue";
+            pdfjsLib.getDocument(fileUrl).promise.then((pdf) => {
+                pdfDoc = pdf;
+                renderPages(600, 500); // Render all pages with a width of 800 pixels and a height of 600 pixels
+            });
+
+        }
+
+        function deleteRecipient() {
+
+            console.log("deleting");
+            const elementId = event.target.parentNode.id;
+            document.getElementById(elementId).remove();
+            console.log(elementId);
+
+            idx = recipientarray.indexOf(elementId);
+            //recipientarray.splice(recipientarray.indexOf(elementId));
+            console.log(idx);
+            console.log(recipientarray.splice(idx, 1));
+            //recipientarray.pop(elementId);
+            rc_count--;
+            console.log(recipientarray);
+
+        }
+       let recipientid=1;
+        function createSigner(id) {
+            console.log("hello")
+            nameid = id + "name";
+            emailid = id + "email";
+            name = document.getElementById(nameid).value;
+            email = document.getElementById(emailid).value;
+            singner = { name: "", email: "" };
+            singner.name = name;
+            singner.email = email;
+            singner.recipientId = ++recipientid;
+            singner.routingOrder = 1;
+            console.log(singner.name);
+            console.log(singner.email);
+            return singner;
+        }
+
+        function createSignersArray() {
+            console.log(rc_count);
+            console.log("creating array");
+            singners = [];
+            for (r = 0; r < rc_count; r++) {
+                id = recipientarray[r];
+                console.log(id)
+                singner = createSigner(id);
+                singners.push(singner);
+            }
+            console.log(singners);
+            return singners;
+        }
+
+        console.log(1);
+        let input = document.getElementById("upload");
+        let reader = new FileReader();
+
+        input.addEventListener('change', function () {
+
+            p = document.createElement("para");
+            p.style.alignContent = "center";
+            p.style.paddingTop = "7px"
+            p.style.backgroundColor = "rgb(49, 172, 244)";
+            p.style.height = "32px";
+            //console.log("change event occured");
+            let file = input.files[0];
+            console.log(file.name)
+            documentname = file.name;
+            p.innerHTML = documentname;
+            document.getElementById('filepreview').appendChild(p);
+            //reader.readAsText(file);
+            reader.readAsDataURL(file);
+
+
+        });
+
+
+        reader.addEventListener('load', function () {
+            console.log("load event occurd");
+            file = reader.result;
+            console.log(file);
+            const basenarray = file.split(",");
+            base64file = basenarray[1];
+            console.log(base64file);
+        });
+
+        function getFiles() {
+            documents = new Array();
+            documents.push(getFileInfo())
+            return documents;
+        }
+
+        function getFileInfo() {
+            document = new Array()
+            document.documentBase64 = base64file,
+            document.documentId = "1",
+            document.fileExtension = "pdf",
+            document.name = documentname;
+            return document;
+
+        }
+        function createJsonBody() {
+            jsonobj = {}
+            signer = [];
+            recipients = {};
+            jsonobj.documents = getFiles()  //array
+            jsonobj.emailsubject = document.getElementById('message').value;//key -value pair
+            jsonobj.recipients = recipients
+            recipients.signers = createSignersArray();
+            console.log(jsonobj)
+            jsonobj.status = "sent";
+            jsonobjstr = JSON.stringify(jsonobj);
+            console.log(jsonobjstr);
+            return jsonobjstr;
+        }
+
+       
+        
+        async function send() {
+        	
+            let responsecode; 	
+            	
+                const xhr = new XMLHttpRequest();
+                
+                xhr.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                    	responsecode = this.responseText;
+                      console.log(responsecode); // Prints "John"
+                      
+                      if(responsecode=="201")
+                          swal("Success!", "Document Sent Successfully", "success"); 
+                          else
+                          swal("Oops", "Document Was Not Sent", "error");             
+
+                      
+                         }
+                        };
+                        
+                // Opening
+                xhr.open('POST','getdocumentrequest','true')
+    			
+                //Setting Header
+                xhr.setRequestHeader("Content-Type", "application/json");
+                //debugger;
+                rs= await createJsonBody()     
+                xhr.send(rs);
+
+            }
+        
+        
+        
+        
+        
+        
+        
+    </script>  
+   
+</body>
+</html>
